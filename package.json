@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "tsc && node dist/app.js",
     "dev": "tsc -w & nodemon dist/app.js"
   },
   "dependencies": {
