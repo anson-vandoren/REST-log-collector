@@ -1,0 +1,192 @@
+{
+	"info": {
+		"_postman_id": "7908f2d8-dbbc-468f-ae2b-eaf1821ee498",
+		"name": "Base",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List logs on this server",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get full log file",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log/eopkg.log",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log",
+						"eopkg.log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get N lines from a log file",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log/eopkg.log?lines=10",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log",
+						"eopkg.log"
+					],
+					"query": [
+						{
+							"key": "lines",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Explicit OR'ed search terms",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log/eopkg.log?term=perl&term=python&searchType=or",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log",
+						"eopkg.log"
+					],
+					"query": [
+						{
+							"key": "term",
+							"value": "perl"
+						},
+						{
+							"key": "term",
+							"value": "python"
+						},
+						{
+							"key": "searchType",
+							"value": "or"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AND'ed search terms",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log/eopkg.log?term=perl&term=python&searchType=and",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log",
+						"eopkg.log"
+					],
+					"query": [
+						{
+							"key": "term",
+							"value": "perl"
+						},
+						{
+							"key": "term",
+							"value": "python"
+						},
+						{
+							"key": "searchType",
+							"value": "and"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Implicit OR'ed search terms",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log/eopkg.log?term=perl&term=python",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log",
+						"eopkg.log"
+					],
+					"query": [
+						{
+							"key": "term",
+							"value": "perl"
+						},
+						{
+							"key": "term",
+							"value": "python"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search with limit",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/log/eopkg.log?term=perl&term=python&lines=10",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"log",
+						"eopkg.log"
+					],
+					"query": [
+						{
+							"key": "term",
+							"value": "perl"
+						},
+						{
+							"key": "term",
+							"value": "python"
+						},
+						{
+							"key": "lines",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
