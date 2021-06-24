@@ -14,6 +14,7 @@ export class BackwardLineReader {
   leftover = ""; // text from last read that might not be a standalone line
   lines: string[] = []; // complete lines read from the file and waiting to be consumed
   isOpen = false; // true when the file is open and more can be read
+  firstRead = true;
 
   constructor(filename: string) {
     // start with normal sized read chunks, until we get to the beginning of the file
@@ -59,10 +60,16 @@ export class BackwardLineReader {
     }
 
     // append leftover text from last time to what was just read in
-    this.leftover = this.buffer.toString().trim() + this.leftover;
+    this.leftover = this.buffer.toString() + this.leftover;
 
     // split buffered content by newlines
     let newLines = this.leftover.split("\n");
+    if (this.firstRead) {
+      // don't need a newline as the first "line". this feels hacky but works, and a better
+      // solution isn't immediately coming to mind
+      this.firstRead = false;
+      newLines.pop();
+    }
 
     // if the end of the file is reached, there are no leftovers
     if (this.isOpen) this.leftover = newLines.shift() || "";
@@ -72,6 +79,6 @@ export class BackwardLineReader {
   }
 
   close() {
-    fs.closeSync(this.fd);
+    if (this.isOpen) fs.closeSync(this.fd);
   }
 }
