@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { BackwardLineReader } from "./linereader";
 
 const baseDir = "/var/log/";
 
@@ -19,22 +20,28 @@ export function listFiles(recurse: boolean = false): string[] {
   return paths.filter((path) => path.isFile()).map((dirent) => dirent.name);
 }
 
-/**
- * Returns newline-delimited, chronologically-reversed lines from a given filename (assuming the file
- * was originally written chronologically). Assumes the file can be found in `/var/log/`
- * @param filename filename relative to `/var/log/`
- * @throws ENOENT if the file is not found
- */
-export function getAllLines(filename: string): string[] {
-  // NOTE: assuming that all log files are written in chronological order, so reversing them will result
-  //       in the desired reverse-chronological. I think this is a good assumption, but a more correct
-  //       implementation might check first and last line timestamps to confirm this.
+export function getNFilteredLines(
+  filename: string,
+  limit: number,
+  terms?: string[],
+  andSearch?: boolean
+): string[] {
   const fullPath = path.join(baseDir, filename);
-  try {
-    const contents = fs.readFileSync(fullPath, "utf-8");
-    return contents.trim().split("\n").reverse();
-  } catch (e) {
-    console.log(e);
-    throw e;
+  const reader = new BackwardLineReader(fullPath);
+  let validLines: string[] = [];
+  while (validLines.length < limit) {
+    let nextLine = reader.next();
+    if (nextLine === null) break; // reached end (beginning) of file
+
+    if (terms && terms.length > 0) {
+      let isValid = andSearch
+        ? terms.every((term) => nextLine!.includes(term))
+        : terms.some((term) => nextLine!.includes(term));
+      if (isValid) validLines.push(nextLine);
+    } else {
+      // no filter, so use the line
+      validLines.push(nextLine);
+    }
   }
+  return validLines;
 }
