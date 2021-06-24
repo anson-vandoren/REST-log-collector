@@ -1,6 +1,6 @@
 import { CommonRoute } from "./common";
 import express from "express";
-import { getNFilteredLines, listFiles } from "../core/filesystem";
+import { getNFilteredLines, listFiles, streamNFilteredLines } from "../core/filesystem";
 
 export class LogRoute extends CommonRoute {
   constructor(app: express.Application) {
@@ -53,13 +53,15 @@ export class LogRoute extends CommonRoute {
         // stream-read the log file backwards until sufficient matches are found
         const filename = req.params.filename;
         let returnedLines;
+        let streamer;
         try {
-          returnedLines = getNFilteredLines(
-            filename,
-            nLines,
-            termArray,
-            andSearch
-          );
+          // returnedLines = getNFilteredLines(
+          //   filename,
+          //   nLines,
+          //   termArray,
+          //   andSearch
+          // );
+          streamer = streamNFilteredLines(filename, nLines, termArray, andSearch);
         } catch (e) {
           if (e.code === "ENOENT") {
             return res.status(404).send(`${filename} not found in /var/log/`);
@@ -71,7 +73,9 @@ export class LogRoute extends CommonRoute {
         // log files may change frequently, so don't cache them
         res.set("Cache-Control", "no-store");
 
-        return res.status(200).send(returnedLines);
+        streamer.pipe(res);
+
+        return res.status(200);
       });
 
     return this.app;

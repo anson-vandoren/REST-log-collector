@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { Readable } from "stream";
 import { BackwardLineReader } from "./linereader";
 
 const baseDir = "/var/log/";
@@ -46,3 +47,36 @@ export function getNFilteredLines(
   reader.close();
   return validLines;
 }
+
+export function streamNFilteredLines(
+  filename: string,
+  limit: number,
+  terms?: string[],
+  andSearch?: boolean): Readable {
+    const fullPath = path.join(baseDir, filename);
+    const reader = new BackwardLineReader(fullPath);
+
+    return new Readable({
+      read(size) {
+        let nextLine = reader.next();
+        if (nextLine === null) this.push(null);
+        while (nextLine !== null) {
+          if (terms && terms.length > 0) {
+            let isValid = andSearch
+              ? terms.every((term) => nextLine!.includes(term))
+              : terms.some((term) => nextLine!.includes(term));
+            if (isValid) {
+              this.push(nextLine + '\n');
+              break;
+            }
+          } else {
+            // no filter, so use the line
+            this.push(nextLine + '\n');
+            break
+          }
+          nextLine = reader.next();
+        }
+      } 
+    })
+
+    }
