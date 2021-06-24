@@ -70,4 +70,8 @@ export class BackwardLineReader {
     this.lines.push(...newLines);
     return this.lines.pop()!;
   }
+
+  close() {
+    fs.closeSync(this.fd);
+  }
 }

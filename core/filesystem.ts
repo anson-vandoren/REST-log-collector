@@ -43,5 +43,6 @@ export function getNFilteredLines(
       validLines.push(nextLine);
     }
   }
+  reader.close();
   return validLines;
 }
