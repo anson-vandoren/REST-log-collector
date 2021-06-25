@@ -9,6 +9,8 @@ const routes: Array<CommonRoute> = [];
 
 routes.push(new LogRoute(app));
 
+app.use(express.static("public"));
+
 const runningMessage = `Server running at http://localhost:${port}`;
 app.get("/", (req: express.Request, res: express.Response) => {
   res.status(200).send(runningMessage);
