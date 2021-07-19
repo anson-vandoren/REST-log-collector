@@ -17,7 +17,11 @@ export function listFiles(recurse: boolean = false): string[] {
       const filePath = path.join(dir, file);
       if (fs.statSync(filePath).isDirectory()) {
         if (recurse) {
-          addFiles(filePath);
+          try {
+            addFiles(filePath);
+          } catch (e) {
+            console.log(`Failed to add files from ${filePath}: ${e}`);
+          }
         }
       } else {
         // remove baseDir from filePath

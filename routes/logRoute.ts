@@ -14,7 +14,7 @@ export class LogRoute extends CommonRoute {
       .route(`/log`)
       .get((req: express.Request, res: express.Response) => {
         try {
-          let logFiles = listFiles();
+          let logFiles = listFiles(true);
           // log files may change frequently, so don't cache them
           res.set("Cache-Control", "no-store");
           return res.status(200).json(logFiles);
