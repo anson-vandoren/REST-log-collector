@@ -10,15 +10,23 @@ const baseDir = "/var/log/";
  * @param recurse if true, recursively walk folders and return all files found in subfolders as well
  */
 export function listFiles(recurse: boolean = false): string[] {
-  if (recurse) {
-    // NOTE: recursive directory search not specified as a requirement, but could be useful since `/var/log` does
-    //       tend to contain subfolders
-    throw new Error("recursive directory walking not implemented");
-  }
-  let paths = fs.readdirSync(baseDir, { withFileTypes: true });
+  let files: string[] = [];
 
-  // filter out directories and return just filenames
-  return paths.filter((path) => path.isFile()).map((dirent) => dirent.name);
+  function addFiles(dir: string) {
+    fs.readdirSync(dir).forEach((file) => {
+      const filePath = path.join(dir, file);
+      if (fs.statSync(filePath).isDirectory()) {
+        if (recurse) {
+          addFiles(filePath);
+        }
+      } else {
+        files.push(filePath);
+      }
+    });
+  }
+
+  addFiles(baseDir);
+  return files;
 }
 
 export class BackwardsStream extends Readable {
@@ -36,6 +44,12 @@ export class BackwardsStream extends Readable {
     andSearch?: boolean
   ) {
     super();
+    // ensure resolved path starts with /var/log/
+    const resolvedPath = path.resolve(baseDir, filename);
+    if (!resolvedPath.startsWith(baseDir)) {
+      throw new Error(`Invalid path: ${resolvedPath}`);
+    }
+
     const fullPath = path.join(baseDir, filename);
     this.reader = new BackwardLineReader(fullPath);
     this.limit = limit;
