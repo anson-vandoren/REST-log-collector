@@ -20,7 +20,8 @@ export function listFiles(recurse: boolean = false): string[] {
           addFiles(filePath);
         }
       } else {
-        files.push(filePath);
+        // remove baseDir from filePath
+        files.push(filePath.substr(baseDir.length));
       }
     });
   }
@@ -44,14 +45,13 @@ export class BackwardsStream extends Readable {
     andSearch?: boolean
   ) {
     super();
-    // ensure resolved path starts with /var/log/
+    // ensure resolved path starts with /var/log/ to prevent walking up the file tree
     const resolvedPath = path.resolve(baseDir, filename);
     if (!resolvedPath.startsWith(baseDir)) {
       throw new Error(`Invalid path: ${resolvedPath}`);
     }
 
-    const fullPath = path.join(baseDir, filename);
-    this.reader = new BackwardLineReader(fullPath);
+    this.reader = new BackwardLineReader(resolvedPath);
     this.limit = limit;
     this.terms = terms;
     this.andSearch = andSearch;
